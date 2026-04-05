@@ -6,6 +6,7 @@ import {
   HiOutlineCalendar,
   HiOutlineScissors,
   HiOutlineClipboardList,
+  HiOutlineUserGroup,
   HiOutlineCog,
   HiOutlineLogout,
   HiOutlineMenu,
@@ -15,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { adminService } from "@/lib/services";
 import type { AdminUser } from "@/types";
 import LanguageToggle from "@/components/LanguageToggle";
+import NotificationCenter from "@/components/NotificationCenter";
 
 export default function AdminLayout() {
   const [admin, setAdmin] = useState<AdminUser | null>(null);
@@ -29,6 +31,7 @@ export default function AdminLayout() {
     { label: t("admin.calendar"), to: "/admin/calendar", icon: HiOutlineCalendar },
     { label: t("admin.treatments"), to: "/admin/treatments", icon: HiOutlineScissors },
     { label: t("admin.appointments"), to: "/admin/appointments", icon: HiOutlineClipboardList },
+    { label: t("admin.customers"), to: "/admin/customers", icon: HiOutlineUserGroup },
     { label: t("admin.settings"), to: "/admin/settings", icon: HiOutlineCog },
   ];
 
@@ -165,6 +168,7 @@ export default function AdminLayout() {
             >
               {t("admin.viewSite")} &rarr;
             </Link>
+            <NotificationCenter />
             <LanguageToggle />
           </div>
         </header>

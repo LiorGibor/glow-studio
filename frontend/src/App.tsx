@@ -11,6 +11,7 @@ import AdminCalendar from "@/pages/admin/AdminCalendar";
 import AdminTreatments from "@/pages/admin/AdminTreatments";
 import AdminAppointments from "@/pages/admin/AdminAppointments";
 import AdminSettings from "@/pages/admin/AdminSettings";
+import AdminCustomers from "@/pages/admin/AdminCustomers";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="calendar" element={<AdminCalendar />} />
         <Route path="treatments" element={<AdminTreatments />} />
         <Route path="appointments" element={<AdminAppointments />} />
+        <Route path="customers" element={<AdminCustomers />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>
     </Routes>

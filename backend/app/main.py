@@ -9,6 +9,8 @@ from app.config import get_settings
 from app.database import init_db, SessionLocal
 from app.models.admin import Admin
 from app.models.settings import BusinessSettings
+from app.models.blocked_slot import BlockedSlot  # noqa: F401 — register model
+from app.models.notification import Notification  # noqa: F401 — register model
 from app.routers import treatments, appointments, admin
 
 

@@ -6,6 +6,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from app.models.appointment import Appointment, AppointmentStatus
+from app.models.blocked_slot import BlockedSlot
 from app.models.settings import BusinessSettings
 from app.models.treatment import Treatment
 from app.schemas.appointment import TimeSlot
@@ -159,6 +160,19 @@ def get_available_slots(
         appt_end = _time_to_minutes(appt.end_time.time())
         booked_intervals.append((appt_start, appt_end))
 
+    # ── Fetch blocked slots for that day ───────────────────────────────
+    blocked_slots = (
+        db.query(BlockedSlot)
+        .filter(BlockedSlot.date == target_date)
+        .all()
+    )
+    blocked_intervals: list[tuple[int, int]] = []
+    for bs in blocked_slots:
+        blocked_intervals.append((
+            _time_to_minutes(bs.start_time),
+            _time_to_minutes(bs.end_time),
+        ))
+
     # ── Generate slots ──────────────────────────────────────────────────
     slots: list[TimeSlot] = []
     current_minutes = _time_to_minutes(open_time)
@@ -175,6 +189,13 @@ def get_available_slots(
             if slot_start < brk_end and slot_end > brk_start:
                 available = False
                 break
+
+        # Check overlap with blocked slots.
+        if available:
+            for blk_start, blk_end in blocked_intervals:
+                if slot_start < blk_end and slot_end > blk_start:
+                    available = False
+                    break
 
         # Check overlap with existing appointments.
         if available:

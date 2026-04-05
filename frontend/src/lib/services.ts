@@ -10,6 +10,11 @@ import type {
   AdminUser,
   BusinessSettings,
   DashboardStats,
+  ChartData,
+  Customer,
+  BlockedSlot,
+  BlockedSlotCreate,
+  NotificationsResponse,
 } from "@/types";
 import api from "./api";
 
@@ -108,4 +113,35 @@ export const adminService = {
 
   getDashboardStats: () =>
     api.get<DashboardStats>("/admin/dashboard-stats").then((r) => r.data),
+
+  getChartData: (days = 30) =>
+    api.get<ChartData>("/admin/chart-data", { params: { days } }).then((r) => r.data),
+
+  getCustomers: () =>
+    api.get<Customer[]>("/admin/customers").then((r) => r.data),
+
+  getBlockedSlots: (params?: { date_from?: string; date_to?: string }) =>
+    api.get<BlockedSlot[]>("/admin/blocked-slots", { params }).then((r) => r.data),
+
+  createBlockedSlot: (data: BlockedSlotCreate) =>
+    api.post<BlockedSlot>("/admin/blocked-slots", data).then((r) => r.data),
+
+  deleteBlockedSlot: (id: number) =>
+    api.delete(`/admin/blocked-slots/${id}`),
+
+  getNotifications: (unreadOnly = false) =>
+    api.get<NotificationsResponse>("/admin/notifications", { params: { unread_only: unreadOnly } }).then((r) => r.data),
+
+  markNotificationRead: (id: number) =>
+    api.put(`/admin/notifications/${id}/read`).then((r) => r.data),
+
+  markAllNotificationsRead: () =>
+    api.put("/admin/notifications/read-all").then((r) => r.data),
+};
+
+// ── Treatment Reorder ──────────────────────────────────────────────────
+
+export const treatmentReorderService = {
+  reorder: (items: { id: number; sort_order: number }[]) =>
+    api.put("/treatments/reorder", items).then((r) => r.data),
 };

@@ -7,10 +7,28 @@ import {
   HiOutlinePhotograph,
   HiOutlineX,
   HiOutlineSearch,
+  HiOutlineDuplicate,
+  HiOutlineMenu,
 } from "react-icons/hi";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { treatmentService } from "@/lib/services";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { treatmentService, treatmentReorderService } from "@/lib/services";
 import { formatPrice, formatDuration, getPlaceholderImage } from "@/lib/utils";
 import type { Treatment, TreatmentCreate } from "@/types";
 
@@ -28,6 +46,41 @@ function ActiveBadge({ active }: { active: boolean }) {
     >
       {active ? t("treatmentsAdmin.active") : t("treatmentsAdmin.inactive")}
     </span>
+  );
+}
+
+// ── Sortable card wrapper ───────────────────────────────────────────────
+
+function SortableTreatmentCard({
+  id,
+  children,
+}: {
+  id: number;
+  children: (dragHandleProps: {
+    attributes: ReturnType<typeof useSortable>["attributes"];
+    listeners: ReturnType<typeof useSortable>["listeners"];
+  }) => React.ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      {children({ attributes, listeners })}
+    </div>
   );
 }
 
@@ -61,13 +114,16 @@ export default function AdminTreatments() {
   const { t } = useTranslation();
 
   // Fetch treatments
-  const fetchTreatments = () => {
+  const fetchTreatments = async () => {
     setLoading(true);
-    treatmentService
-      .list()
-      .then(setTreatments)
-      .catch(() => toast.error(t("treatmentsAdmin.loadError")))
-      .finally(() => setLoading(false));
+    try {
+      const data = await treatmentService.list();
+      setTreatments(data);
+    } catch {
+      toast.error(t("treatmentsAdmin.loadError"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -106,6 +162,56 @@ export default function AdminTreatments() {
     setImageFile(null);
     setGalleryFiles([]);
     setShowModal(true);
+  };
+
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor)
+  );
+
+  // Drag end handler
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = treatments.findIndex((t) => t.id === active.id);
+    const newIndex = treatments.findIndex((t) => t.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(treatments, oldIndex, newIndex);
+    setTreatments(reordered);
+
+    const items = reordered.map((t, i) => ({ id: t.id, sort_order: i }));
+    try {
+      await treatmentReorderService.reorder(items);
+      toast.success(t("treatmentsAdmin.reordered"));
+    } catch {
+      toast.error(t("treatmentsAdmin.saveError"));
+      fetchTreatments();
+    }
+  };
+
+  // Duplicate treatment
+  const handleDuplicate = async (treatment: Treatment) => {
+    try {
+      const duplicateData: TreatmentCreate = {
+        name: `העתק - ${treatment.name}`,
+        category: treatment.category,
+        description: treatment.description || "",
+        short_description: treatment.short_description || "",
+        duration_minutes: treatment.duration_minutes,
+        price: treatment.price,
+        is_active: treatment.is_active,
+        sort_order: treatment.sort_order,
+      };
+      const newTreatment = await treatmentService.create(duplicateData);
+      toast.success(t("treatmentsAdmin.duplicated"));
+      await fetchTreatments();
+      openEdit(newTreatment);
+    } catch {
+      toast.error(t("treatmentsAdmin.saveError"));
+    }
   };
 
   // Save
@@ -201,89 +307,119 @@ export default function AdminTreatments() {
       </div>
 
       {/* Treatment cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45 }}
-        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
       >
-        {loading
-          ? Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
-              >
-                <div className="h-40 skeleton" />
-                <div className="p-5 space-y-3">
-                  <div className="h-5 w-3/4 rounded skeleton" />
-                  <div className="h-4 w-1/2 rounded skeleton" />
-                  <div className="h-4 w-full rounded skeleton" />
-                </div>
-              </div>
-            ))
-          : filtered.map((treatment) => (
-              <motion.div
-                key={treatment.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group"
-              >
-                {/* Image */}
-                <div className="relative h-40 bg-gray-100 overflow-hidden">
-                  <img
-                    src={treatment.image_url || getPlaceholderImage(treatment.category)}
-                    alt={treatment.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 start-3">
-                    <span className="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur text-xs font-medium text-gray-700">
-                      {treatment.category}
-                    </span>
+        <SortableContext
+          items={filtered.map((t) => t.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
+          >
+            {loading
+              ? Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+                  >
+                    <div className="h-40 skeleton" />
+                    <div className="p-5 space-y-3">
+                      <div className="h-5 w-3/4 rounded skeleton" />
+                      <div className="h-4 w-1/2 rounded skeleton" />
+                      <div className="h-4 w-full rounded skeleton" />
+                    </div>
                   </div>
-                  <div className="absolute top-3 end-3">
-                    <ActiveBadge active={treatment.is_active} />
-                  </div>
-                </div>
+                ))
+              : filtered.map((treatment) => (
+                  <SortableTreatmentCard key={treatment.id} id={treatment.id}>
+                    {({ attributes, listeners }) => (
+                      <motion.div
+                        layout
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group"
+                      >
+                        {/* Image */}
+                        <div className="relative h-40 bg-gray-100 overflow-hidden">
+                          <img
+                            src={treatment.image_url || getPlaceholderImage(treatment.category)}
+                            alt={treatment.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute top-3 start-3">
+                            <span className="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur text-xs font-medium text-gray-700">
+                              {treatment.category}
+                            </span>
+                          </div>
+                          <div className="absolute top-3 end-3">
+                            <ActiveBadge active={treatment.is_active} />
+                          </div>
+                          {/* Drag handle */}
+                          <button
+                            {...attributes}
+                            {...listeners}
+                            className="absolute bottom-3 start-3 p-1.5 rounded-lg bg-white/90 backdrop-blur text-gray-500 hover:text-gray-700 cursor-grab active:cursor-grabbing transition"
+                            title={t("treatmentsAdmin.reorder")}
+                          >
+                            <HiOutlineMenu className="w-4 h-4" />
+                          </button>
+                        </div>
 
-                {/* Content */}
-                <div className="p-5">
-                  <h3 className="font-semibold text-gray-900 text-lg mb-1">
-                    {treatment.name}
-                  </h3>
-                  <p className="text-gray-500 text-sm line-clamp-2 mb-3">
-                    {treatment.short_description || treatment.description || "No description"}
-                  </p>
+                        {/* Content */}
+                        <div className="p-5">
+                          <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                            {treatment.name}
+                          </h3>
+                          <p className="text-gray-500 text-sm line-clamp-2 mb-3">
+                            {treatment.short_description || treatment.description || "No description"}
+                          </p>
 
-                  <div className="flex items-center gap-3 text-sm text-gray-600 mb-4">
-                    <span>{formatDuration(treatment.duration_minutes)}</span>
-                    <span className="text-gray-300">|</span>
-                    <span className="font-medium text-primary-600">
-                      {formatPrice(treatment.price)}
-                    </span>
-                  </div>
+                          <div className="flex items-center gap-3 text-sm text-gray-600 mb-4">
+                            <span>{formatDuration(treatment.duration_minutes)}</span>
+                            <span className="text-gray-300">|</span>
+                            <span className="font-medium text-primary-600">
+                              {formatPrice(treatment.price)}
+                            </span>
+                          </div>
 
-                  {/* Actions */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => openEdit(treatment)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-                    >
-                      <HiOutlinePencil className="w-4 h-4" />
-                      {t("treatmentsAdmin.edit")}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(treatment)}
-                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition"
-                    >
-                      <HiOutlineTrash className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-      </motion.div>
+                          {/* Actions */}
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => openEdit(treatment)}
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                            >
+                              <HiOutlinePencil className="w-4 h-4" />
+                              {t("treatmentsAdmin.edit")}
+                            </button>
+                            <button
+                              onClick={() => handleDuplicate(treatment)}
+                              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                              title={t("treatmentsAdmin.duplicate")}
+                            >
+                              <HiOutlineDuplicate className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(treatment)}
+                              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition"
+                            >
+                              <HiOutlineTrash className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </SortableTreatmentCard>
+                ))}
+          </motion.div>
+        </SortableContext>
+      </DndContext>
 
       {!loading && filtered.length === 0 && (
         <div className="text-center py-16 text-gray-400">

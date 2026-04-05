@@ -154,6 +154,21 @@ def delete_treatment(
     db.commit()
 
 
+@router.put("/reorder", status_code=200)
+def reorder_treatments(
+    items: list[dict],
+    db: Session = Depends(get_db),
+    _admin=Depends(get_current_admin),
+):
+    """Update sort_order for multiple treatments at once."""
+    for item in items:
+        treatment = db.query(Treatment).filter(Treatment.id == item["id"]).first()
+        if treatment:
+            treatment.sort_order = item["sort_order"]
+    db.commit()
+    return {"ok": True}
+
+
 @router.post("/{treatment_id}/upload-image")
 async def upload_treatment_image(
     treatment_id: int,

@@ -95,6 +95,7 @@
     "calendar": "יומן",
     "treatments": "טיפולים",
     "appointments": "תורים",
+    "customers": "לקוחות",
     "settings": "הגדרות"
   },
   "login": {
@@ -124,7 +125,20 @@
     "customer": "לקוח/ה",
     "treatment": "טיפול",
     "dateTime": "תאריך ושעה",
-    "status": "סטטוס"
+    "status": "סטטוס",
+    "todaySchedule": "לוח הזמנים להיום",
+    "noToday": "אין תורים להיום",
+    "revenueChart": "הכנסות (30 יום אחרונים)",
+    "bookingsChart": "תורים (30 יום אחרונים)",
+    "topTreatments": "טיפולים פופולריים",
+    "revenue": "הכנסות",
+    "bookings": "תורים",
+    "actions": "פעולות",
+    "confirm": "אישור",
+    "cancel": "ביטול",
+    "complete": "השלם",
+    "statusUpdated": "הסטטוס עודכן",
+    "statusUpdateError": "שגיאה בעדכון הסטטוס"
   },
   "calendarPage": {
     "title": "יומן",
@@ -133,7 +147,16 @@
     "noAppointments": "אין תורים ביום זה",
     "days": ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"],
     "appt": "תור {{count}}",
-    "appts": "{{count}} תורים"
+    "appts": "{{count}} תורים",
+    "blockTime": "חסימת זמן",
+    "blockSlot": "חסימת זמן חדשה",
+    "startTime": "שעת התחלה",
+    "endTime": "שעת סיום",
+    "reason": "סיבה",
+    "reasonPlaceholder": "סיבת החסימה (אופציונלי)...",
+    "blocked": "חסום",
+    "save": "שמירה",
+    "cancel": "ביטול"
   },
   "treatmentsAdmin": {
     "title": "טיפולים",
@@ -177,7 +200,10 @@
     "saveError": "שגיאה בשמירת הטיפול",
     "deactivateConfirm": "להשבית את \"{{name}}\"? הטיפול לא יופיע יותר ללקוחות.",
     "deactivated": "הטיפול הושבת",
-    "deactivateError": "שגיאה בהשבתת הטיפול"
+    "deactivateError": "שגיאה בהשבתת הטיפול",
+    "duplicate": "שכפול",
+    "duplicated": "הטיפול שוכפל",
+    "reordered": "הסדר עודכן"
   },
   "appointmentsAdmin": {
     "title": "תורים",
@@ -296,6 +322,30 @@
         "treatment": "טיפול פנים"
       }
     ]
+  },
+  "notifications": {
+    "title": "התראות",
+    "empty": "אין התראות",
+    "markAllRead": "סמן הכל כנקרא"
+  },
+  "customersPage": {
+    "title": "לקוחות",
+    "subtitle": "מאגר לקוחות מתורים קודמים",
+    "search": "חיפוש לפי שם או טלפון...",
+    "totalCustomers": "סה״כ לקוחות",
+    "totalRevenue": "סה״כ הכנסות",
+    "name": "שם",
+    "phone": "טלפון",
+    "email": "אימייל",
+    "totalBookings": "סה״כ תורים",
+    "totalSpent": "סה״כ הוצאות",
+    "lastVisit": "ביקור אחרון",
+    "noCustomers": "לא נמצאו לקוחות",
+    "bookingHistory": "היסטוריית תורים",
+    "treatment": "טיפול",
+    "date": "תאריך",
+    "status": "סטטוס",
+    "price": "מחיר"
   },
   "statuses": {
     "confirmed": "מאושר",

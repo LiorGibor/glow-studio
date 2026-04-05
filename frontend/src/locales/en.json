@@ -95,6 +95,7 @@
     "calendar": "Calendar",
     "treatments": "Treatments",
     "appointments": "Appointments",
+    "customers": "Customers",
     "settings": "Settings"
   },
   "login": {
@@ -124,7 +125,20 @@
     "customer": "Customer",
     "treatment": "Treatment",
     "dateTime": "Date & Time",
-    "status": "Status"
+    "status": "Status",
+    "todaySchedule": "Today's Schedule",
+    "noToday": "No appointments today",
+    "revenueChart": "Revenue (Last 30 Days)",
+    "bookingsChart": "Bookings (Last 30 Days)",
+    "topTreatments": "Popular Treatments",
+    "revenue": "Revenue",
+    "bookings": "Bookings",
+    "actions": "Actions",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "complete": "Complete",
+    "statusUpdated": "Status updated",
+    "statusUpdateError": "Failed to update status"
   },
   "calendarPage": {
     "title": "Calendar",
@@ -133,7 +147,16 @@
     "noAppointments": "No appointments on this day",
     "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     "appt": "{{count}} appt",
-    "appts": "{{count}} appts"
+    "appts": "{{count}} appts",
+    "blockTime": "Block Time",
+    "blockSlot": "New Time Block",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "reason": "Reason",
+    "reasonPlaceholder": "Reason for blocking (optional)...",
+    "blocked": "Blocked",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "treatmentsAdmin": {
     "title": "Treatments",
@@ -177,7 +200,10 @@
     "saveError": "Failed to save treatment",
     "deactivateConfirm": "Deactivate \"{{name}}\"? It will no longer appear to customers.",
     "deactivated": "Treatment deactivated",
-    "deactivateError": "Failed to deactivate treatment"
+    "deactivateError": "Failed to deactivate treatment",
+    "duplicate": "Duplicate",
+    "duplicated": "Treatment duplicated",
+    "reordered": "Order updated"
   },
   "appointmentsAdmin": {
     "title": "Appointments",
@@ -296,6 +322,30 @@
         "treatment": "Facial Treatment"
       }
     ]
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAllRead": "Mark all as read"
+  },
+  "customersPage": {
+    "title": "Customers",
+    "subtitle": "Customer database from past bookings",
+    "search": "Search by name or phone...",
+    "totalCustomers": "Total Customers",
+    "totalRevenue": "Total Revenue",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "totalBookings": "Total Bookings",
+    "totalSpent": "Total Spent",
+    "lastVisit": "Last Visit",
+    "noCustomers": "No customers found",
+    "bookingHistory": "Booking History",
+    "treatment": "Treatment",
+    "date": "Date",
+    "status": "Status",
+    "price": "Price"
   },
   "statuses": {
     "confirmed": "Confirmed",

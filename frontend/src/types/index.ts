@@ -133,3 +133,75 @@ export interface DashboardStats {
   revenue_month: number;
   recent_appointments: Appointment[];
 }
+
+// ── Chart Data ──────────────────────────────────────────────────────────
+
+export interface DailyChartData {
+  date: string;
+  revenue: number;
+  bookings: number;
+}
+
+export interface TopTreatment {
+  name: string;
+  count: number;
+}
+
+export interface ChartData {
+  daily: DailyChartData[];
+  top_treatments: TopTreatment[];
+}
+
+// ── Customer ────────────────────────────────────────────────────────────
+
+export interface CustomerAppointment {
+  id: number;
+  treatment_name: string;
+  appointment_date: string;
+  status: string;
+  price: number;
+}
+
+export interface Customer {
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string | null;
+  total_bookings: number;
+  total_spent: number;
+  last_visit: string | null;
+  appointments: CustomerAppointment[];
+}
+
+// ── Blocked Slot ────────────────────────────────────────────────────────
+
+export interface BlockedSlot {
+  id: number;
+  date: string;
+  start_time: string;
+  end_time: string;
+  reason: string | null;
+  created_at: string | null;
+}
+
+export interface BlockedSlotCreate {
+  date: string;
+  start_time: string;
+  end_time: string;
+  reason?: string;
+}
+
+// ── Notification ────────────────────────────────────────────────────────
+
+export interface AppNotification {
+  id: number;
+  type: string;
+  title: string;
+  message: string | null;
+  is_read: boolean;
+  created_at: string | null;
+}
+
+export interface NotificationsResponse {
+  notifications: AppNotification[];
+  unread_count: number;
+}

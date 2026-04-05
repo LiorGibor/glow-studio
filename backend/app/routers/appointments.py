@@ -13,9 +13,17 @@ from app.schemas.appointment import (
     AppointmentUpdate,
     TimeSlot,
 )
+from app.models.notification import Notification
 from app.services.auth import get_current_admin
 from app.services.availability import get_available_slots
 from app.services.notification import notify_cancellation, notify_new_booking
+
+
+def _create_notification(db, type: str, title: str, message: str = ""):
+    """Helper to create a notification record."""
+    n = Notification(type=type, title=title, message=message)
+    db.add(n)
+    db.commit()
 
 router = APIRouter(prefix="/api/appointments", tags=["Appointments"])
 
@@ -74,6 +82,14 @@ def _create_appointment(
     db.refresh(appointment)
 
     background_tasks.add_task(notify_new_booking, appointment, treatment)
+
+    # Create notification
+    _create_notification(
+        db,
+        "new_booking",
+        f"הזמנה חדשה: {appointment.customer_name}",
+        f"{treatment.name} - {appointment.appointment_date.strftime('%d/%m/%Y %H:%M')}",
+    )
 
     return appointment
 
@@ -219,6 +235,20 @@ def update_appointment(
         treatment = db.query(Treatment).filter(Treatment.id == appointment.treatment_id).first()
         if treatment:
             background_tasks.add_task(notify_cancellation, appointment, treatment)
+        _create_notification(
+            db,
+            "cancellation",
+            f"ביטול תור: {appointment.customer_name}",
+            f"{appointment.appointment_date.strftime('%d/%m/%Y %H:%M')}",
+        )
+
+    if new_status == AppointmentStatus.COMPLETED.value and old_status != AppointmentStatus.COMPLETED.value:
+        _create_notification(
+            db,
+            "completed",
+            f"תור הושלם: {appointment.customer_name}",
+            f"{appointment.appointment_date.strftime('%d/%m/%Y %H:%M')}",
+        )
 
     return appointment
 
