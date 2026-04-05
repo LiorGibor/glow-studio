@@ -258,6 +258,45 @@
       "sunday": "Sunday"
     }
   },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We'd love to hear from you",
+    "phone": "054-123-4567",
+    "phoneLabel": "Call Now",
+    "address": "10 Beauty St, Tel Aviv",
+    "hoursTitle": "Business Hours",
+    "hours": {
+      "sunThu": "Sun - Thu: 09:00 - 18:00",
+      "sat": "Sat: 09:00 - 14:00",
+      "fri": "Friday: Closed"
+    }
+  },
+  "reviews": {
+    "title": "What Our Clients Say",
+    "subtitle": "Real experiences from happy customers",
+    "items": [
+      {
+        "name": "Noa Cohen",
+        "text": "The treatment was amazing! My eyebrows have never looked so good. Highly recommend!",
+        "treatment": "Eyebrow Shaping"
+      },
+      {
+        "name": "Shira Levi",
+        "text": "The bridal makeup was perfect. I received so many compliments on my wedding day. Thank you!",
+        "treatment": "Bridal Makeup"
+      },
+      {
+        "name": "Michal Abraham",
+        "text": "Their gel manicure lasts for weeks! The place is clean, pleasant, and the staff is very professional.",
+        "treatment": "Gel Manicure"
+      },
+      {
+        "name": "Dana Rosenberg",
+        "text": "The facial was a pampering experience. My skin has been glowing for a week!",
+        "treatment": "Facial Treatment"
+      }
+    ]
+  },
   "statuses": {
     "confirmed": "Confirmed",
     "pending": "Pending",

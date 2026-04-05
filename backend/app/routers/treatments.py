@@ -17,12 +17,27 @@ router = APIRouter(prefix="/api/treatments", tags=["Treatments"])
 UPLOAD_DIR = Path(__file__).resolve().parent.parent / "static" / "uploads"
 
 
+_HE_TO_EN = {
+    "א": "a", "ב": "b", "ג": "g", "ד": "d", "ה": "h", "ו": "v", "ז": "z",
+    "ח": "ch", "ט": "t", "י": "y", "כ": "k", "ך": "k", "ל": "l", "מ": "m",
+    "ם": "m", "נ": "n", "ן": "n", "ס": "s", "ע": "a", "פ": "p", "ף": "f",
+    "צ": "ts", "ץ": "ts", "ק": "k", "ר": "r", "ש": "sh", "ת": "t",
+    "׳": "", "״": "",
+}
+
+
 def _generate_slug(name: str) -> str:
-    slug = name.lower().strip()
+    # Transliterate Hebrew characters to Latin
+    transliterated = "".join(_HE_TO_EN.get(c, c) for c in name)
+    slug = transliterated.lower().strip()
     slug = re.sub(r"[^a-z0-9\s-]", "", slug)
     slug = re.sub(r"[\s]+", "-", slug)
     slug = re.sub(r"-+", "-", slug)
-    return slug.strip("-")
+    slug = slug.strip("-")
+    # Fallback if slug is still empty (e.g. only special characters)
+    if not slug:
+        slug = uuid.uuid4().hex[:8]
+    return slug
 
 
 # ---------------------------------------------------------------------------

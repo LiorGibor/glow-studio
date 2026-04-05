@@ -43,14 +43,14 @@ test.describe("Customer - Treatments Redirect", () => {
 
 test.describe("Customer - Treatment Detail Page", () => {
   test("shows treatment details", async ({ page }) => {
-    await page.goto("/treatments/gel-manicure");
+    await page.goto("/treatments/mnykvr-gl");
     await page.waitForTimeout(2000);
     const body = await page.textContent("body");
-    expect(body!.toLowerCase()).toContain("manicure");
+    expect(body!.includes("manicure") || body!.includes("Manicure") || body!.includes("מניקור")).toBeTruthy();
   });
 
   test("has a book now button", async ({ page }) => {
-    await page.goto("/treatments/gel-manicure");
+    await page.goto("/treatments/mnykvr-gl");
     await page.waitForTimeout(2000);
     const bookButton = page.locator(
       'a[href*="book"], button:has-text("Book"), a:has-text("Book"), a:has-text("הזמינו")'
@@ -61,21 +61,21 @@ test.describe("Customer - Treatment Detail Page", () => {
 
 test.describe("Customer - Booking Page", () => {
   test("loads booking page with slug", async ({ page }) => {
-    await page.goto("/book/classic-eyebrow-shaping");
+    await page.goto("/book/aytsvb-gbvt-klasy");
     await page.waitForTimeout(2000);
     const body = await page.textContent("body");
-    expect(body!.toLowerCase()).toContain("eyebrow");
+    expect(body!.includes("eyebrow") || body!.includes("Eyebrow") || body!.includes("גבות")).toBeTruthy();
   });
 
   test("shows date picker (step 1)", async ({ page }) => {
-    await page.goto("/book/classic-eyebrow-shaping");
+    await page.goto("/book/aytsvb-gbvt-klasy");
     await page.waitForTimeout(2000);
     const body = await page.textContent("body");
     expect(body!.includes("Date") || body!.includes("תאריך") || body!.includes("Select") || body!.includes("בחרו")).toBeTruthy();
   });
 
   test("shows customer form on step 3", async ({ page }) => {
-    await page.goto("/book/classic-eyebrow-shaping");
+    await page.goto("/book/aytsvb-gbvt-klasy");
     await page.waitForTimeout(2000);
     // Select a date
     const dateBtn = page.locator("button").filter({ hasNotText: "Continue" }).nth(5);
@@ -193,7 +193,10 @@ test.describe("Admin - Treatments Management", () => {
     expect(
       body!.includes("Eyebrow") ||
         body!.includes("Manicure") ||
-        body!.includes("Makeup")
+        body!.includes("Makeup") ||
+        body!.includes("גבות") ||
+        body!.includes("מניקור") ||
+        body!.includes("איפור")
     ).toBeTruthy();
   });
 });
@@ -277,8 +280,8 @@ test.describe("Error Handling", () => {
 test.describe("No Console Errors", () => {
   const pagesToCheck = [
     "/",
-    "/treatments/gel-manicure",
-    "/book/gel-manicure",
+    "/treatments/mnykvr-gl",
+    "/book/mnykvr-gl",
     "/admin/login",
   ];
 

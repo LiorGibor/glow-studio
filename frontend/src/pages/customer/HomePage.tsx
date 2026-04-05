@@ -6,6 +6,9 @@ import {
   HiOutlineClock,
   HiOutlineCurrencyDollar,
   HiOutlineArrowRight,
+  HiOutlinePhone,
+  HiOutlineLocationMarker,
+  HiOutlineStar,
 } from "react-icons/hi";
 import { useTranslation } from "react-i18next";
 import { treatmentService } from "@/lib/services";
@@ -291,6 +294,162 @@ export default function HomePage() {
           </motion.div>
         )}
       </section>
+
+      {/* ─── Reviews ─────────────────────────────────────────────── */}
+      <section className="bg-gradient-to-b from-white to-primary-50/30 py-16 sm:py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-10"
+          >
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900">
+              {t("reviews.title")}
+            </h2>
+            <p className="mt-3 text-gray-500 text-lg max-w-lg mx-auto">
+              {t("reviews.subtitle")}
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {(t("reviews.items", { returnObjects: true }) as Array<{ name: string; text: string; treatment: string }>).map(
+              (review, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col"
+                >
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, j) => (
+                      <HiOutlineStar key={j} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed flex-1">
+                    &ldquo;{review.text}&rdquo;
+                  </p>
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="text-sm font-semibold text-gray-900">{review.name}</p>
+                    <p className="text-xs text-primary-500">{review.treatment}</p>
+                  </div>
+                </motion.div>
+              )
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Contact, Hours & Map ────────────────────────────────── */}
+      <section id="contact" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-10"
+        >
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900">
+            {t("contact.title")}
+          </h2>
+          <p className="mt-3 text-gray-500 text-lg max-w-lg mx-auto">
+            {t("contact.subtitle")}
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Info cards */}
+          <div className="space-y-6">
+            {/* Phone */}
+            <motion.a
+              href={`tel:${t("contact.phone").replace(/-/g, "")}`}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex items-center gap-4 p-5 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-primary-200 transition-all no-underline"
+            >
+              <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                <HiOutlinePhone className="w-6 h-6 text-primary-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">{t("contact.phoneLabel")}</p>
+                <p className="text-lg font-semibold text-gray-900" dir="ltr">{t("contact.phone")}</p>
+              </div>
+            </motion.a>
+
+            {/* Address */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="flex items-center gap-4 p-5 bg-white rounded-2xl shadow-sm border border-gray-100"
+            >
+              <div className="w-12 h-12 rounded-full bg-accent-100 flex items-center justify-center flex-shrink-0">
+                <HiOutlineLocationMarker className="w-6 h-6 text-accent-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">{t("settingsPage.address")}</p>
+                <p className="text-lg font-semibold text-gray-900">{t("contact.address")}</p>
+              </div>
+            </motion.div>
+
+            {/* Business Hours */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="p-5 bg-white rounded-2xl shadow-sm border border-gray-100"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <HiOutlineClock className="w-6 h-6 text-green-600" />
+                </div>
+                <p className="text-lg font-semibold text-gray-900">{t("contact.hoursTitle")}</p>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p>{t("contact.hours.sunThu")}</p>
+                <p>{t("contact.hours.sat")}</p>
+                <p>{t("contact.hours.fri")}</p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Google Maps embed */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 min-h-[350px]"
+          >
+            <iframe
+              title="Glow Studio Location"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27054.958899938085!2d34.76!3d32.08!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x151d4ca6193b7c1f%3A0xc1fb72a2c0963f90!2sTel%20Aviv-Yafo!5e0!3m2!1sen!2sil!4v1"
+              width="100%"
+              height="100%"
+              style={{ border: 0, minHeight: 350 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── Floating Phone Button (mobile) ──────────────────────── */}
+      <a
+        href={`tel:${t("contact.phone").replace(/-/g, "")}`}
+        className="fixed bottom-6 start-6 z-40 lg:hidden w-14 h-14 rounded-full bg-green-500 text-white
+                   flex items-center justify-center shadow-lg shadow-green-500/30
+                   hover:bg-green-600 active:scale-95 transition-all no-underline"
+        aria-label={t("contact.phoneLabel")}
+      >
+        <HiOutlinePhone className="w-6 h-6" />
+      </a>
     </div>
   );
 }

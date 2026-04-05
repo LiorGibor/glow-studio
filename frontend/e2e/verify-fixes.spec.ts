@@ -27,18 +27,18 @@ test.describe("Bug Fix Verification", () => {
   });
 
   test("booking page works with slug", async ({ page }) => {
-    await page.goto("/book/classic-eyebrow-shaping");
+    await page.goto("/book/aytsvb-gbvt-klasy");
     await page.waitForTimeout(2000);
     const body = await page.textContent("body");
-    expect(body!.toLowerCase()).toContain("eyebrow");
+    expect(body!.includes("eyebrow") || body!.includes("Eyebrow") || body!.includes("גבות")).toBeTruthy();
     expect(body!.includes("Date") || body!.includes("תאריך")).toBeTruthy();
   });
 
   test("treatment detail page works", async ({ page }) => {
-    await page.goto("/treatments/gel-manicure");
+    await page.goto("/treatments/mnykvr-gl");
     await page.waitForTimeout(2000);
     const body = await page.textContent("body");
-    expect(body!.toLowerCase()).toContain("manicure");
+    expect(body!.includes("manicure") || body!.includes("Manicure") || body!.includes("מניקור")).toBeTruthy();
     expect(body!.includes("Book") || body!.includes("הזמינו")).toBeTruthy();
   });
 
@@ -85,9 +85,9 @@ test.describe("Bug Fix Verification", () => {
     // Navigate through key pages
     await page.goto("/");
     await page.waitForTimeout(2000);
-    await page.goto("/treatments/gel-manicure");
+    await page.goto("/treatments/mnykvr-gl");
     await page.waitForTimeout(2000);
-    await page.goto("/book/gel-manicure");
+    await page.goto("/book/mnykvr-gl");
     await page.waitForTimeout(2000);
 
     const criticalErrors = errors.filter(

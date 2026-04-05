@@ -53,6 +53,16 @@ export default function Footer() {
               {t("footer.contact")}
             </h3>
             <ul className="space-y-2 text-sm">
+              <li>
+                <a
+                  href={`tel:${t("contact.phone").replace(/-/g, "")}`}
+                  className="hover:text-white transition-colors no-underline text-gray-400"
+                  dir="ltr"
+                >
+                  {t("contact.phone")}
+                </a>
+              </li>
+              <li>{t("contact.address")}</li>
               <li>{t("footer.hours1")}</li>
               <li>{t("footer.hours2")}</li>
               <li>{t("footer.hours3")}</li>

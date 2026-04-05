@@ -13,6 +13,7 @@ export default function Navbar() {
   const navLinks = [
     { label: t("nav.home"), to: "/" },
     { label: t("nav.treatments"), to: "/#treatments" },
+    { label: t("contact.title"), to: "/#contact" },
     { label: t("nav.bookNow"), to: "/#treatments", highlight: true },
   ];
 
